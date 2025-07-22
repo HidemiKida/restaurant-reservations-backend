@@ -45,7 +45,7 @@ class AuthController extends Controller
                     ],
                     'token' => $token,
                     'token_type' => 'bearer',
-                    'expires_in' => config('jwt.ttl') * 60
+                    'expires_in' => auth()->factory()->getTTL() * 60
                 ]
             ], 201);
 
@@ -87,7 +87,7 @@ class AuthController extends Controller
                     ],
                     'token' => $token,
                     'token_type' => 'bearer',
-                    'expires_in' => config('jwt.ttl') * 60
+                    'expires_in' => auth()->factory()->getTTL() * 60
                 ]
             ]);
 
@@ -168,7 +168,7 @@ class AuthController extends Controller
                 'data' => [
                     'token' => $newToken,
                     'token_type' => 'bearer',
-                    'expires_in' => config('jwt.ttl') * 60
+                    'expires_in' => auth()->factory()->getTTL() * 60
                 ]
             ]);
 

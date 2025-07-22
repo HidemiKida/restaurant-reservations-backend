@@ -30,5 +30,31 @@ Route::middleware('auth:api')->prefix('auth')->group(function () {
 
 // Protected API routes will be added here as needed
 Route::middleware('auth:api')->group(function () {
-    // Future routes for reservations, restaurants, etc.
+    // Test routes for role-based access control
+    Route::get('/test/client', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Acceso permitido para clientes',
+            'user' => auth()->user()->only(['id', 'name', 'email']),
+            'roles' => auth()->user()->getRoleNames(),
+        ]);
+    })->middleware('role:cliente');
+
+    Route::get('/test/admin', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Acceso permitido para administradores',
+            'user' => auth()->user()->only(['id', 'name', 'email']),
+            'roles' => auth()->user()->getRoleNames(),
+        ]);
+    })->middleware('role:admin,superadmin');
+
+    Route::get('/test/superadmin', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Acceso permitido solo para super administradores',
+            'user' => auth()->user()->only(['id', 'name', 'email']),
+            'roles' => auth()->user()->getRoleNames(),
+        ]);
+    })->middleware('role:superadmin');
 });
