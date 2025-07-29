@@ -16,8 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias para middlewares personalizados
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'client' => \App\Http\Middleware\ClientMiddleware::class,
+            'restaurant.owner' => \App\Http\Middleware\RestaurantOwnerMiddleware::class,
         ]);
-        
         // CORS para API
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,

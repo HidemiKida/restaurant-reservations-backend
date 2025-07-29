@@ -11,6 +11,7 @@ class Restaurant extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'owner_id',          // ← NUEVO
         'name',
         'description',
         'address',
@@ -36,6 +37,11 @@ class Restaurant extends Model
     }
 
     // Relationships
+    public function owner()                    // ← NUEVO
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
     public function tables()
     {
         return $this->hasMany(Table::class);
@@ -52,21 +58,8 @@ class Restaurant extends Model
         return $query->where('is_active', true);
     }
 
-    // Methods
-    public function isOpenOn($day)
+    public function scopeOwnedBy($query, $userId)    // ← NUEVO
     {
-        return in_array(strtolower($day), $this->opening_days);
-    }
-
-    public function getAvailableTablesForDateTime($dateTime, $partySize)
-    {
-        return $this->tables()
-            ->where('capacity', '>=', $partySize)
-            ->where('is_available', true)
-            ->whereDoesntHave('reservations', function ($query) use ($dateTime) {
-                $query->where('reservation_date', $dateTime)
-                      ->whereIn('status', ['pendiente', 'confirmada']);
-            })
-            ->get();
+        return $query->where('owner_id', $userId);
     }
 }

@@ -47,18 +47,15 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    /**
-     * Boot method para establecer valores por defecto
-     */
-    protected static function boot()
+    // Relationships
+    public function restaurant()                    // ← NUEVO
     {
-        parent::boot();
-        
-        static::creating(function ($user) {
-            if (empty($user->role)) {
-                $user->role = self::ROLE_CLIENTE;
-            }
-        });
+        return $this->hasOne(Restaurant::class, 'owner_id');
+    }
+
+    public function reservations()                  // ← NUEVO
+    {
+        return $this->hasMany(Reservation::class);
     }
 
     // JWT Methods
@@ -72,62 +69,24 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    // Helper methods para roles
-    public function isCliente()
-    {
-        return $this->role === self::ROLE_CLIENTE;
-    }
-
-    public function isAdmin()
+    // Helper Methods
+    public function isAdmin()                       // ← NUEVO
     {
         return $this->role === self::ROLE_ADMIN;
     }
 
-    public function isSuperAdmin()
+    public function isSuperAdmin()                  // ← NUEVO
     {
         return $this->role === self::ROLE_SUPERADMIN;
     }
 
-    public function isAdminOrSuperAdmin()
+    public function isCliente()                     // ← NUEVO
     {
-        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPERADMIN]);
+        return $this->role === self::ROLE_CLIENTE;
     }
 
-    /**
-     * Obtener avatar basado en rol
-     */
-    public function getAvatarAttribute()
+    public function hasRestaurant()                 // ← NUEVO
     {
-        return match($this->role) {
-            self::ROLE_SUPERADMIN => '👑',
-            self::ROLE_ADMIN => '👨‍💼',
-            self::ROLE_CLIENTE => '🥢',
-            default => '👤'
-        };
-    }
-
-    /**
-     * Obtener nombre del rol en formato amigable
-     */
-    public function getRoleNameAttribute()
-    {
-        return match($this->role) {
-            self::ROLE_SUPERADMIN => 'Super Administrador',
-            self::ROLE_ADMIN => 'Administrador',
-            self::ROLE_CLIENTE => 'Cliente',
-            default => 'Usuario'
-        };
-    }
-
-    /**
-     * Obtener todos los roles disponibles
-     */
-    public static function getRoles()
-    {
-        return [
-            self::ROLE_CLIENTE => 'Cliente',
-            self::ROLE_ADMIN => 'Administrador',
-            self::ROLE_SUPERADMIN => 'Super Administrador',
-        ];
+        return $this->restaurant()->exists();
     }
 }
