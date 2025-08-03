@@ -14,7 +14,25 @@ use App\Http\Controllers\API\Client\ServiceController;
 | API Routes
 |--------------------------------------------------------------------------
 */
-
+Route::get('/ping', function () {
+    // Obtener información de la solicitud
+    $clientIp = request()->ip();
+    $userAgent = request()->header('User-Agent');
+    
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Asian Restaurant API está funcionando correctamente',
+        'timestamp' => now()->format('Y-m-d H:i:s'),
+        'server_info' => [
+            'laravel_version' => app()->version(),
+            'environment' => app()->environment(),
+        ],
+        'client_info' => [
+            'ip' => $clientIp,
+            'user_agent' => $userAgent,
+        ],
+    ]);
+});
 // Rutas públicas (sin autenticación)
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
